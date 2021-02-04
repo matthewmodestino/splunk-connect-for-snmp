@@ -1,5 +1,5 @@
 #!/bin/bash
-wget https://github.com/splunk/splunk-connect-for-kubernetes/releases/download/1.3.0/splunk-connect-for-kubernetes-1.3.0.tgz -O splunk-connect-for-kubernetes.tgz 
+wget https://github.com/splunk/splunk-connect-for-kubernetes/releases/download/1.4.5/splunk-connect-for-kubernetes-1.4.5.tgz -O splunk-connect-for-kubernetes.tgz 
 
 GLOBAL_HEC_INSECURE_SSL=${GLOBAL_HEC_INSECURE_SSL:=false}
 OBJECTS_INSECURE_SSL=${OBJECTS_INSECURE_SSL:=false}
