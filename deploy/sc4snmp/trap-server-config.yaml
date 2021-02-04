@@ -13,7 +13,7 @@ data:
           - "my-area"
       mibs:
         url:
-          - "https://mibs.thola.io/asn1/@mib@"
+          - "https://mib-server/asn1/@mib@"
         load_list:  
           - "SNMPv2-MIB"
           - "SNMP-COMMUNITY-MIB"
