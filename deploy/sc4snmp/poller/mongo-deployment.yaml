@@ -1,9 +1,10 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: mongo
 spec:
   replicas: 1
+  serviceName: "mongo"
   selector:
     matchLabels:
       app: mongo
@@ -12,8 +13,15 @@ spec:
       labels:
         app: mongo
     spec:
+      volumes:
+        - name: task-pv-storage
+          persistentVolumeClaim:
+            claimName: task-pv-claim
       containers:
         - name: mongo
           image: mongo:4.4.4
           ports:
             - containerPort: 27017
+          volumeMounts:
+            - mountPath: "/tmp/hostpath-provisioner/mongo"
+              name: task-pv-storage

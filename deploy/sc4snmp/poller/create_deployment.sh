@@ -112,6 +112,8 @@ github_username="${USER}"
 github_email="${github_username}@splunk.com"
 echo "Please type your person access github token:"
 read -r token
+echo "Please type your HEC SPlunk token:"
+read -r hec_splunk_token
 poller_config_file=$(download_poller_config_file "${token}")
 
 kubernetes_poller_deploy_or_update_config "${poller_config_file}" "${KUBERNETES_POLLER_CONFIG_MAP_NAME}"
