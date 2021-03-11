@@ -23,5 +23,5 @@ spec:
           ports:
             - containerPort: 27017
           volumeMounts:
-            - mountPath: "/tmp/hostpath-provisioner/mongo"
+            - mountPath: "/data"
               name: task-pv-storage
