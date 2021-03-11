@@ -113,13 +113,15 @@ github_username="${USER}"
 github_email="${github_username}@splunk.com"
 echo "Please type your person access github token:"
 read -r token
+echo "Please type your HEC Splunk token:"
+read -r hec_splunk_token
 poller_config_file=$(download_poller_config_file "${token}")
 
 kubernetes_poller_deploy_or_update_config "${poller_config_file}" "${KUBERNETES_POLLER_CONFIG_MAP_NAME}"
 # TODO: try to get the secret name with yq directly from scheduler-deployment.yaml. For now I am
 # getting a syntax error when trying to access a list, not sure why.
 kubernetes_create_or_replace_docker_secret "https://ghcr.io/v2/splunk" ${github_username} ${token} ${github_email} "regcred"
-kubernetes_create_or_replace_hec_secret "https://host.docker.internal:8088/services/collector" "1f1a82b3-8bfd-43d4-9a20-98fdee4c95b9" "remote-splunk"
+kubernetes_create_or_replace_hec_secret "https://host.docker.internal:8088/services/collector" "${hec_splunk_token}" "remote-splunk"
 kubernetes_deploy_rabbitmq
 kubernetes_deploy_mongo
 kubernetes_deploy_mibserver
