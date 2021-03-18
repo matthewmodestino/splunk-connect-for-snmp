@@ -6,9 +6,13 @@ In order to run this you need the following steps:
         inet 192.168.1.114 netmask 0xffffff00 broadcast 192.168.1.255
         inet 10.127.60.203 netmask 0xffffffff broadcast 10.127.60.203
 
+  you need to change the IP hardcoded in otel-doc-example-old.yaml:exporters:endpoint
+
   in my case, 10.127.60.203 is reachable from docker, so that's the one I need to use.
   In your case, the IP address will be different.
 2. figure out your HEC tocken
+   You need to change the value in otel-doc-example-old.yaml:exporters:token
+
 3. verify that the index name specified in otel-doc-example-old.yaml exists in your local Splunk.
    In my case I was using the one used for the poller testing "snmp"
 4. open a terminal, navigate to the folder "otel", and run
