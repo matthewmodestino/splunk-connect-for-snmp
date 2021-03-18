@@ -1,0 +1,51 @@
+In order to run this you need the following steps:
+
+1. figure out your local IP address. In my case, when I run:
+  lstoppa@C02DL3AAMD6R splunk-connect-for-snmp % ifconfig| grep "inet "
+        inet 127.0.0.1 netmask 0xff000000
+        inet 192.168.1.114 netmask 0xffffff00 broadcast 192.168.1.255
+        inet 10.127.60.203 netmask 0xffffffff broadcast 10.127.60.203
+
+  in my case, 10.127.60.203 is reachable from docker, so that's the one I need to use.
+  In your case, the IP address will be different.
+2. figure out your HEC tocken
+3. verify that the index name specified in otel-doc-example-old.yaml exists in your local Splunk.
+   In my case I was using the one used for the poller testing "snmp"
+4. open a terminal, navigate to the folder "otel", and run
+   lstoppa@C02DL3AAMD6R otel % docker-compose up
+    WARNING: Found orphan containers (otel_otel-opentelemetry-collector-contrib_1, otel_opentelemetry-collector-contrib_1, otel_otel-collector-contrib_1) for this project. If you removed or renamed this service in your compose file, you can run this command with the --remove-orphans flag to clean it up.
+    Recreating otel_otel-collector_1 ... done
+    Attaching to otel_otel-collector_1
+    otel-collector_1  | 2021/03/18 13:18:28 main.go:211: Set config to /etc/otel-doc-example-old.yaml
+    otel-collector_1  | 2021/03/18 13:18:28 main.go:238: Set ballast to 168 MiB
+    otel-collector_1  | 2021/03/18 13:18:28 main.go:267: Set memory limit to 460 MiB
+    otel-collector_1  | 2021-03-18T13:18:28.070Z    INFO    service/service.go:411  Starting OpenTelemetry Collector...     {"Version": "latest", "GitHash": "cd05d0f", "NumCPU": 8}
+    otel-collector_1  | 2021-03-18T13:18:28.074Z    INFO    service/service.go:592  Using memory ballast    {"MiBs": 168}
+    otel-collector_1  | 2021-03-18T13:18:28.075Z    INFO    service/service.go:255  Setting up own telemetry...
+    otel-collector_1  | 2021-03-18T13:18:28.076Z    INFO    service/telemetry.go:102        Serving Prometheus metrics      {"address": "localhost:8888", "level": 0, "service.instance.id": "8025e873-ab22-4224-a7f2-27e117a4e2b6"}
+    otel-collector_1  | 2021-03-18T13:18:28.076Z    INFO    service/service.go:292  Loading configuration...
+    otel-collector_1  | 2021-03-18T13:18:28.079Z    INFO    service/service.go:303  Applying configuration...
+    otel-collector_1  | 2021-03-18T13:18:28.079Z    INFO    service/service.go:324  Starting extensions...
+    otel-collector_1  | 2021-03-18T13:18:28.080Z    INFO    builder/exporters_builder.go:306        Exporter is enabled.    {"component_kind": "exporter", "exporter": "splunk_hec"}
+    otel-collector_1  | 2021-03-18T13:18:28.080Z    INFO    builder/exporters_builder.go:306        Exporter is enabled.    {"component_kind": "exporter", "exporter": "logging"}
+    otel-collector_1  | 2021-03-18T13:18:28.080Z    INFO    service/service.go:339  Starting exporters...
+    otel-collector_1  | 2021-03-18T13:18:28.080Z    INFO    builder/exporters_builder.go:92 Exporter is starting... {"component_kind": "exporter", "component_type": "splunk_hec", "component_name": "splunk_hec"}
+    otel-collector_1  | 2021-03-18T13:18:28.080Z    INFO    builder/exporters_builder.go:97 Exporter started.       {"component_kind": "exporter", "component_type": "splunk_hec", "component_name": "splunk_hec"}
+    otel-collector_1  | 2021-03-18T13:18:28.080Z    INFO    builder/exporters_builder.go:92 Exporter is starting... {"component_kind": "exporter", "component_type": "logging", "component_name": "logging"}
+    otel-collector_1  | 2021-03-18T13:18:28.080Z    INFO    builder/exporters_builder.go:97 Exporter started.       {"component_kind": "exporter", "component_type": "logging", "component_name": "logging"}
+    otel-collector_1  | 2021-03-18T13:18:28.080Z    INFO    builder/pipelines_builder.go:207        Pipeline is enabled.    {"pipeline_name": "logs", "pipeline_datatype": "logs"}
+    otel-collector_1  | 2021-03-18T13:18:28.080Z    INFO    service/service.go:352  Starting processors...
+    otel-collector_1  | 2021-03-18T13:18:28.080Z    INFO    builder/pipelines_builder.go:51 Pipeline is starting... {"pipeline_name": "logs", "pipeline_datatype": "logs"}
+    otel-collector_1  | 2021-03-18T13:18:28.080Z    INFO    builder/pipelines_builder.go:61 Pipeline is started.    {"pipeline_name": "logs", "pipeline_datatype": "logs"}
+    otel-collector_1  | 2021-03-18T13:18:28.080Z    INFO    builder/receivers_builder.go:235        Receiver is enabled.    {"component_kind": "receiver", "component_type": "splunk_hec", "component_name": "splunk_hec", "datatype": "logs"}
+    otel-collector_1  | 2021-03-18T13:18:28.080Z    INFO    service/service.go:364  Starting receivers...
+    otel-collector_1  | 2021-03-18T13:18:28.080Z    INFO    builder/receivers_builder.go:70 Receiver is starting... {"component_kind": "receiver", "component_type": "splunk_hec", "component_name": "splunk_hec"}
+    otel-collector_1  | 2021-03-18T13:18:28.080Z    INFO    builder/receivers_builder.go:75 Receiver started.       {"component_kind": "receiver", "component_type": "splunk_hec", "component_name": "splunk_hec"}
+    otel-collector_1  | 2021-03-18T13:18:28.081Z    INFO    service/service.go:267  Everything is ready. Begin running and processing data.
+5. Open a new terminal, and run the following command (no need to change anything, port 9999 is the correct one
+   for everyone)
+    lstoppa@C02DL3AAMD6R splunk-connect-for-snmp % curl http://localhost:9999 -d '{"event": "I am an HEC event from OTEL", "sourcetype": "metric"}'
+6. Check in Splunk Web that the new event is there:
+    18/03/2021 14:20:11.000
+    I am an HEC event from OTEL
+    host = unknownsource = otelsourcetype = metric

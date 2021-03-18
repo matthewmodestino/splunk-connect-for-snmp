@@ -1,0 +1,22 @@
+receivers:
+  splunk_hec:
+
+exporters:
+  splunk_hec:
+    token: "6b5dcda2-6ead-46bf-a03e-6a9f24c8bd30"
+    endpoint: "https://10.127.60.203:8088/services/collector"
+    source: "otel"
+    sourcetype: "otel"
+    index: "snmp"
+    max_connections: 20
+    disable_compression: false
+    timeout: 10s
+    insecure_skip_verify: true
+  logging:
+    loglevel: debug
+
+service:
+  pipelines:
+    logs:
+      receivers: [splunk_hec]
+      exporters: [logging, splunk_hec]

@@ -1,0 +1,15 @@
+version: "2"
+services:
+  otel-collector:
+    image: quay.io/signalfx/splunk-otel-collector:0.21.0
+    command: ["--config=/etc/otel-doc-example-old.yaml"]
+    volumes:
+      - ./otel-doc-example-old.yaml:/etc/otel-doc-example-old.yaml
+      - ./testcert.crt:/testcert.crt
+      - ./testcert.key:/testkey.key
+    ports:
+      - "13133:13133" # health_check extension
+      - "9999:8088"   # Splunk HEC extension
+
+
+
