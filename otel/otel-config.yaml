@@ -1,0 +1,24 @@
+receivers:
+  splunk_hec/events:
+    endpoint: "0.0.0.0:${OTEL_EVENTS_PORT}"
+    path: "/events"
+  splunk_hec/metrics:
+    endpoint: "0.0.0.0:${OTEL_METRICS_PORT}"
+    path: "/metrics"
+
+exporters:
+  splunk_hec:
+    token: "${OTEL_HEC_TOKEN}"
+    endpoint: "${OTEL_HEC_ENDPOINT}"
+    insecure_skip_verify: true
+  logging:
+    loglevel: debug
+
+service:
+  pipelines:
+    metrics:
+      receivers: [splunk_hec/metrics]
+      exporters: [logging, splunk_hec]
+    logs:
+      receivers: [splunk_hec/events]
+      exporters: [logging, splunk_hec]

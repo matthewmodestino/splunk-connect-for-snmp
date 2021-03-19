@@ -1,24 +1,22 @@
 receivers:
-  splunk_hec/events:
-    endpoint: 0.0.0.0:8881
+  splunk_hec/logs:
+    endpoint: "0.0.0.0:8881"
     path: "/events"
   splunk_hec/metrics:
-    endpoint: 0.0.0.0:8882
+    endpoint: "0.0.0.0:8882"
     path: "/metrics"
 
 exporters:
   splunk_hec:
-    token: "6b5dcda2-6ead-46bf-a03e-6a9f24c8bd30"
+    token: "728bc98f-bb45-40d4-9bbd-cd97e9f28d21"
     endpoint: "https://192.168.1.114:8088/services/collector"
     insecure_skip_verify: true
-  logging:
-    loglevel: debug
 
 service:
   pipelines:
     metrics:
       receivers: [splunk_hec/metrics]
-      exporters: [logging, splunk_hec]
+      exporters: [splunk_hec]
     logs:
-      receivers: [splunk_hec/events]
-      exporters: [logging, splunk_hec]
+      receivers: [splunk_hec/logs]
+      exporters: [splunk_hec]

@@ -49,8 +49,10 @@ In order to run this you need the following steps:
 5. Open a new terminal, and run the following command (no need to change anything, port 9999 is the correct one
    for everyone)
     lstoppa@C02DL3AAMD6R splunk-connect-for-snmp % curl http://localhost:8881/events -d '{"event": "I am an HEC event from OTEL", "sourcetype": "metric"}'
-    lstoppa@C02DL3AAMD6R splunk-connect-for-snmp % curl http://localhost:8882/metrics -d '{"time": 1486683865.000,"event":"metric","source":"disk","host":"host_1.splunk.com","fields":{"region":"us-west-1","datacenter":"dc1","rack":"63","os":"Ubuntu16.10","arch":"x64","team":"LON","service":"6","service_version":"0","service_environment":"test","path":"/dev/sda1","fstype":"ext3","metric_name:cpu.usr": 11.12,"metric_name:cpu.sys": 12.23, "metric_name:cpu.idle": 13.34}}'
-6. Check in Splunk Web that the new event is there:
-    18/03/2021 14:20:11.000
-    I am an HEC event from OTEL
-    host = unknownsource = otelsourcetype = metric
+    lstoppa@C02DL3AAMD6R splunk-connect-for-snmp % curl http://localhost:8882/metrics -d '{"event":"metric","source":"disk","host":"host_1.splunk.com","fields":{"region":"us-west-1","datacenter":"dc1","rack":"63","os":"Ubuntu16.10","arch":"x64","team":"LON","service":"6","service_version":"0","service_environment":"test","path":"/dev/sda1","fstype":"ext3","metric_name:cpu.usr": 11.12,"metric_name:cpu.sys": 12.23, "metric_name:cpu.idle": 13.34}}'
+6. Check in Splunk Web that the new events is there by using "*". You should have 3 metrics and one event
+
+TODO:
+a WIP for generalizing configurations, and be ready for Kubernetes deployment.
+Unfortunately, the content of a Kubernetes ConfigMap is static, so we cannot modify it.
+export OTEL_EVENTS_PORT=88814 OTEL_METRICS_PORT=88823 OTEL_HEC_TOKEN=12345678 OTEL_HEC_ENDPOINT=http://localhost:8088; envsubst < otel-config.yaml > otel-config-output.yaml
