@@ -9,7 +9,8 @@ services:
       - ./testcert.key:/testkey.key
     ports:
       - "13133:13133" # health_check extension
-      - "9999:8088"   # Splunk HEC extension
+      - "8881:8881"   # Splunk HEC extension events
+      - "8882:8882"   # Splunk HEC extension metrics
 
 
 

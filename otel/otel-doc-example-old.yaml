@@ -1,22 +1,24 @@
 receivers:
-  splunk_hec:
+  splunk_hec/events:
+    endpoint: 0.0.0.0:8881
+    path: "/events"
+  splunk_hec/metrics:
+    endpoint: 0.0.0.0:8882
+    path: "/metrics"
 
 exporters:
   splunk_hec:
     token: "6b5dcda2-6ead-46bf-a03e-6a9f24c8bd30"
-    endpoint: "https://10.127.60.203:8088/services/collector"
-    source: "otel"
-    sourcetype: "otel"
-    index: "snmp"
-    max_connections: 20
-    disable_compression: false
-    timeout: 10s
+    endpoint: "https://192.168.1.114:8088/services/collector"
     insecure_skip_verify: true
   logging:
     loglevel: debug
 
 service:
   pipelines:
+    metrics:
+      receivers: [splunk_hec/metrics]
+      exporters: [logging, splunk_hec]
     logs:
-      receivers: [splunk_hec]
+      receivers: [splunk_hec/events]
       exporters: [logging, splunk_hec]
