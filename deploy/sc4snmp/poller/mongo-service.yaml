@@ -1,10 +1,12 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: mongo-service
+  name: database
+  labels:
+    app: database
 spec:
   type: LoadBalancer
   ports:
     - port: 27017
   selector:
-    app: mongo
+    app: database
