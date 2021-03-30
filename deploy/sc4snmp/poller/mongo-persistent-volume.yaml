@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-    name: mongodb-standalone
+    name: mongo
 spec:
   capacity:
     storage: 2Gi
@@ -9,7 +9,7 @@ spec:
   accessModes:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
-  storageClassName: mongodb-standalone
+  storageClassName: mongo
   local:
     path: /data/db
   nodeAffinity:

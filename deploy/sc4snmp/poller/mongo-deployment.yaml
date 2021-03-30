@@ -1,26 +1,23 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: mongodb-standalone
+  name: mongo
 spec:
-  serviceName: database
+  serviceName: mongo
   replicas: 1
   selector:
     matchLabels:
-      app: database
+      app: mongo
   template:
     metadata:
       labels:
-        app: database
-        selector: mongodb-standalone
+        app: mongo
+        selector: mongo
     spec:
       containers:
-      - name: mongodb-standalone
-        image: mongo
+      - name: mongo
+        image: mongo:4.4.4
         volumeMounts:
-        #- name: k8-training
-        #  mountPath: /etc/k8-training
-        #  readOnly: true
         - name: mongodb-conf
           mountPath: /config
           readOnly: true
@@ -29,14 +26,13 @@ spec:
       nodeSelector:
         kubernetes.io/hostname: microk8s-vm
       volumes:
-      - name: k8-training
       - name: mongodb-conf
         configMap:
-          name: mongodb-standalone
+          name: mongo
           items:
           - key: mongo.conf
             path: mongo.conf
       - name: mongodb-data
         persistentVolumeClaim:
-          claimName: mongodb-standalone
+          claimName: mongo
 ---
