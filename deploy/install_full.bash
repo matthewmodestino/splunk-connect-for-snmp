@@ -22,6 +22,15 @@ realpath() {
   echo "$REALPATH"
 }
 
+kapply(){
+  if [ -f $2 ]; then  src_cmd="cat $2"; else src_cmd="curl -s https://raw.githubusercontent.com/splunk/splunk-connect-for-snmp/$BRANCH/$2"; fi
+    
+  $src_cmd \
+    | sed -e "s/##EVENTS_INDEX##/${EVENTS_INDEX}/g;s/##METRICS_INDEX##/${METRICS_INDEX}/g;s/##META_INDEX##/${META_INDEX}/g" \
+    | $KCMD -n $1 apply -f -
+}
+
+
 install_snapd_on_centos7() {
   yum -y install epel-release
   yum -y install snapd
@@ -127,6 +136,14 @@ then
     microk8s enable metallb:$SHAREDIP
   done
 fi
+
+
+module_storage=$(microk8s status -a storage)
+if [ "$module_storage" = "disabled" ];
+then
+  microk8s enable storage
+fi
+
 
 HCMD=helm
 if ! command -v helm &> /dev/null
@@ -312,8 +329,18 @@ then
 
 fi #end sim or both
 
-$KCMD delete ns sc4snmp --wait=true 2>/dev/null
-$KCMD create ns sc4snmp 2>/dev/null  || true
+#Create the namespace
+kapply sc4snmp deploy/sc4snmp/namespace.yaml
+
+$HCMD repo add bitnami https://charts.bitnami.com/bitnami
+$HCMD repo add bitnami https://charts.bitnami.com/bitnami
+$HCMD repo update
+
+#Mongo helm
+$HCMD -n sc4snmp install cache -f deploy/mongo/values.yaml bitnami/mongodb --wait 
+$HCMD -n sc4snmp install celery -f deploy/rabbitmq/values.yaml bitnami/rabbitmq --wait 
+
+$KCMD -n sc4snmp delete secret remote-splunk
 
 if [ "$MODE" == "both" ];
 then
@@ -360,11 +387,11 @@ $svc_values \
       | sed "s/##SHAREDIP##/${svcip}/g" \
       | $KCMD -n sc4snmp apply -f -
 
-files=( "deploy/sc4snmp/internal/mib-server-deployment.yaml" "deploy/sc4snmp/internal/mongo-deployment.yaml" "deploy/sc4snmp/internal/otel-config.yaml" "deploy/sc4snmp/internal/otel-service.yaml" "deploy/sc4snmp/internal/rq-service.yaml" "deploy/sc4snmp/internal/traps-deployment.yaml" "deploy/sc4snmp/internal/mib-server-service.yaml" "deploy/sc4snmp/internal/mongo-service.yaml" "deploy/sc4snmp/internal/otel-deployment.yaml" "deploy/sc4snmp/internal/rq-deployment.yaml" "deploy/sc4snmp/internal/scheduler-deployment.yaml" "deploy/sc4snmp/internal/worker-deployment.yaml" )
+files=( "deploy/sc4snmp/internal/mib-server-deployment.yaml" "deploy/sc4snmp/internal/otel-config.yaml" "deploy/sc4snmp/internal/otel-service.yaml" "deploy/sc4snmp/internal/traps-deployment.yaml" "deploy/sc4snmp/internal/mib-server-service.yaml" "deploy/sc4snmp/internal/otel-deployment.yaml" "deploy/sc4snmp/internal/scheduler-deployment.yaml" "deploy/sc4snmp/internal/worker-deployment.yaml" )
 for i in "${files[@]}"
 do
   if [ -f $i ]; then f=$i; else f=https://raw.githubusercontent.com/splunk/splunk-connect-for-snmp/$BRANCH/$i; fi
-  $KCMD -n sc4snmp create -f $f
+  $KCMD -n sc4snmp apply -f $f
 done
 
 echo ""
